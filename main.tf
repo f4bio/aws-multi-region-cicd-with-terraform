@@ -2,7 +2,21 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-  name = "demo"
+  name             = "idleague"
+  namespace        = "idleague-tf-state" # This is the tf_backend_config_prefix. Pick a namespace that's globally unique in S3.  See https://github.com/cloudposse/terraform-aws-tfstate-backend#input_namespace
+  environment_list = ["dev", "qa", "staging", "prod"]
+}
+
+module "terraform_state_backend" {
+  for_each            = toset(local.environment_list)
+  source              = "github.com/cloudposse/terraform-aws-tfstate-backend?ref=0.38.1"
+  namespace           = local.namespace
+  stage               = each.key
+  dynamodb_table_name = "${local.namespace}-lock-${each.key}"
+
+  terraform_backend_config_file_path = "."
+  terraform_backend_config_file_name = "backend.tf"
+  force_destroy                      = false
 }
 
 # Regional CI/CD Resources such as CodeBuild, CodePipeline, CodeCommit resources

@@ -1,13 +1,13 @@
 variable "region" {
   type        = string
   description = "Target region"
-  default     = "us-east-1"
+  default     = "eu-central-1"
 }
 
 variable "global_resource_deploy_from_region" {
   type        = string
   description = "Region from which to deploy global resources in our pipeline"
-  default     = "us-east-1"
+  default     = "eu-central-1"
 }
 
 variable "account" {
